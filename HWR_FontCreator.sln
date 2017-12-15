@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2009
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HWR_FontCreator", "HWR_FontCreator\HWR_FontCreator.csproj", "{15D86212-BDE1-4B84-B371-5071C3FBAAA0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{15D86212-BDE1-4B84-B371-5071C3FBAAA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15D86212-BDE1-4B84-B371-5071C3FBAAA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15D86212-BDE1-4B84-B371-5071C3FBAAA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15D86212-BDE1-4B84-B371-5071C3FBAAA0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CD2F3610-3367-4B79-9939-96DA52DAB45D}
+	EndGlobalSection
+EndGlobal
