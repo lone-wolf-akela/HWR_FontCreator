@@ -6,9 +6,9 @@ namespace Homeworld2.RCF
 {
     public class Glyph
     {
-        private float _tmp1;
-        private float _tmp2;
-        private byte _temp;
+        public float BitmapLeft { get; set; }
+        public float BitmapTop { get; set; }
+        public byte Zero { get; set; }
 
         public char Character { get; set; }
         public int ImageIndex { get; set; }
@@ -16,10 +16,10 @@ namespace Homeworld2.RCF
         public int TopMargin { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
-        public float WidthInPoints { get; set; }
-        public float FloatWidth { get; set; }
-        public float HeightInPoints { get; set; }
-        public float FloatHeight { get; set; }
+        public float BitmapRight { get; set; }
+        public float AdvanceX { get; set; }
+        public float Baseline { get; set; }
+        public float BitmapBottom { get; set; }
 
         public static Glyph Read(IFFReader iff)
         {
@@ -31,13 +31,13 @@ namespace Homeworld2.RCF
                 TopMargin = iff.ReadInt32(),
                 Width = iff.ReadInt32(),
                 Height = iff.ReadInt32(),
-                _tmp1 = iff.ReadSingle(),
-                WidthInPoints = iff.ReadSingle(),
-                FloatWidth = iff.ReadSingle(),
-                _tmp2 = iff.ReadSingle(),
-                HeightInPoints = iff.ReadSingle(),
-                FloatHeight = iff.ReadSingle(),
-                _temp = iff.ReadByte()
+                BitmapLeft = iff.ReadSingle(),
+                BitmapRight = iff.ReadSingle(),
+                AdvanceX = iff.ReadSingle(),
+                BitmapTop = iff.ReadSingle(),
+                Baseline = iff.ReadSingle(),
+                BitmapBottom = iff.ReadSingle(),
+                Zero = iff.ReadByte()
             };
 
             return glyph;
@@ -52,13 +52,13 @@ namespace Homeworld2.RCF
             iff.WriteInt32(Width);
             iff.WriteInt32(Height);
 
-            iff.Write(_tmp1);
-            iff.Write(WidthInPoints);
-            iff.Write(FloatWidth);
-            iff.Write(_tmp2);
-            iff.Write(HeightInPoints);
-            iff.Write(FloatHeight);
-            iff.Write(_temp);
+            iff.Write(BitmapLeft);
+            iff.Write(BitmapRight);
+            iff.Write(AdvanceX);
+            iff.Write(BitmapTop);
+            iff.Write(Baseline);
+            iff.Write(BitmapBottom);
+            iff.Write(Zero);
         }
     }
 }

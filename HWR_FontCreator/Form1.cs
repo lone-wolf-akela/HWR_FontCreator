@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Homeworld2.RCF;
+using SharpFont;
 using Glyph = Homeworld2.RCF.Glyph;
 
 
@@ -18,9 +19,9 @@ namespace HWR_FontCreator
 {
     public partial class Form1 : Form
     {
-        private RCF font = new RCF();
-        private Form2 form2;
-        private Form3 form3;
+        private readonly RCF _font = new RCF();
+        private Form2 _form2;
+        private Form3 _form3;
         public Form1()
         {
             InitializeComponent();
@@ -41,7 +42,7 @@ namespace HWR_FontCreator
                     return;
                 using (Stream fontStream = dialog.OpenFile())
                 {
-                    font.Read(fontStream);
+                    _font.Read(fontStream);
                 }
             }
             
@@ -49,17 +50,17 @@ namespace HWR_FontCreator
             listBox1.Items.Clear();
             listBox2.Items.Clear();
 
-            for (int i = 1; i <= font.Typefaces.Count; i++)
+            for (int i = 1; i <= _font.Typefaces.Count; i++)
             {
                 listBox1.Items.Add(i);
             }
 
             textBox1.Text =
-                $@"Name: {font.Name}
-CharsetCount: {font.CharsetCount}
-Version: {font.Version}";
+                $@"Name: {_font.Name}
+CharsetCount: {_font.CharsetCount}
+Version: {_font.Version}";
 
-            textBox4.Text = font.Charset;
+            textBox4.Text = _font.Charset;
         }
 
         //选择typeface
@@ -69,7 +70,7 @@ Version: {font.Version}";
             {
                 return;
             }
-            Typeface selectedType = font.Typefaces[listBox1.SelectedIndex];
+            Typeface selectedType = _font.Typefaces[listBox1.SelectedIndex];
             listBox2.Items.Clear();
             for (int i = 1; i <= selectedType.Images.Count; i++)
             {
@@ -87,8 +88,8 @@ Attr: {selectedType.Attributes}";
             {
                 return;
             }
-            Homeworld2.RCF.Image img = font.Typefaces[listBox1.SelectedIndex].Images[listBox2.SelectedIndex];
-            form2.pictureBox1.Image = helper.type2img(img);
+            Homeworld2.RCF.Image img = _font.Typefaces[listBox1.SelectedIndex].Images[listBox2.SelectedIndex];
+            _form2.pictureBox1.Image = helper.type2img(img);
             textBox3.Text =
                 $@"Name: {img.Name}
 Version: {img.Version}
@@ -98,10 +99,10 @@ Height: {img.Height}";
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            form2 = new Form2();
-            form2.Show();
-            form3 = new Form3();
-            form3.Show();
+            _form2 = new Form2();
+            _form2.Show();
+            _form3 = new Form3();
+            _form3.Show();
         }
 
         //选择特定文字
@@ -113,17 +114,19 @@ Height: {img.Height}";
             )
                 return;
 
-            var glyphs = from __glyph in font.Typefaces[listBox1.SelectedIndex].Glyphs
-                         where __glyph.Character == textBox5.Text[0]
-                         select __glyph;
+            var glyphs = from aGlyph in _font.Typefaces[listBox1.SelectedIndex].Glyphs
+                         where aGlyph.Character == textBox5.Text[0]
+                         select aGlyph;
 
             if (!glyphs.Any())
+            {
                 return;
+            }
 
             Glyph glyph = glyphs.First();
 
             Homeworld2.RCF.Image img =
-                font.Typefaces[listBox1.SelectedIndex].Images[glyph.ImageIndex];
+                _font.Typefaces[listBox1.SelectedIndex].Images[glyph.ImageIndex];
 
             Bitmap bmp = helper.type2img(img);
             Rectangle rect = new Rectangle(
@@ -133,15 +136,18 @@ Height: {img.Height}";
                 glyph.Height
             );
 
-            form3.pictureBox1.Image = helper.type2img(img).Clone(rect, bmp.PixelFormat);
+            _form3.pictureBox1.Image = helper.type2img(img).Clone(rect, bmp.PixelFormat);
 
             textBox6.Text =
                 $@"Height: {glyph.Height}
 Width: {glyph.Width}
-FloatHeight: {glyph.FloatHeight}
-FloatWidth: {glyph.FloatWidth}
-HeightInPoints: {glyph.HeightInPoints}
-WidthInPoints: {glyph.WidthInPoints}";
+BitmapLeft: {glyph.BitmapLeft}
+BitmapRight: {glyph.BitmapRight}
+AdvanceX: {glyph.AdvanceX}
+BitmapTop: {glyph.BitmapTop}
+Baseline:{glyph.Baseline}
+BitmapBottom:{glyph.BitmapBottom}
+Zero:{glyph.Zero}";
         }
 
         //导入字体文件
@@ -154,112 +160,149 @@ WidthInPoints: {glyph.WidthInPoints}";
             }
             form4.Dispose();
 
-            var aLibraryN = new SharpFont.Library();
-            var aFaceN = aLibraryN.NewFace(form4answer.normalFontPath, 0);
-            SharpFont.Face aFaceB = null;
-            if (form4answer.useBoldFont)
+            var aLibrary = new Library();
+            var aFaceN = aLibrary.NewFace(Form4Answer.NormalFontPath, 0);
+            Face aFaceB = null;
+            Face aFaceAN = null;
+            Face aFaceAB = null;
+
+            if (Form4Answer.UseBoldFont)
             {
-                var aLibraryB = new SharpFont.Library();
-                aFaceB = aLibraryB.NewFace(form4answer.boldFontPath, 0);
+                aFaceB = aLibrary.NewFace(Form4Answer.BoldFontPath, 0);
             }
-            for (int i = 0; i < form4answer.charSet.Length; i++)
+            if (Form4Answer.UseSpecialFont4Ascii)
             {
-                if (aFaceN.GetCharIndex(form4answer.charSet[i]) == 0)
+                aFaceAN = aLibrary.NewFace(Form4Answer.AsciiNormalFontPath, 0);
+                if (Form4Answer.UseBoldFont)
                 {
-                    form4answer.charSet = form4answer.charSet.Remove(i, 1);
+                    aFaceAB = aLibrary.NewFace(Form4Answer.AsciiBoldFontPath, 0);
+                }
+            }
+
+            for (int i = 0; i < Form4Answer.CharSet.Length; i++)
+            {
+                if (aFaceN.GetCharIndex(Form4Answer.CharSet[i]) == 0)
+                {
+                    Form4Answer.CharSet = Form4Answer.CharSet.Remove(i, 1);
                     i--;
                 }
             }
 
-            font.Charset = form4answer.charSet;
-            font.Name = "default";
-            font.Version = 1;
-            if (form4answer.useBoldFont)
+            _font.Charset = Form4Answer.CharSet;
+            _font.Name = "default";
+            _font.Version = 1;
+
+            //Attributes参数的具体含义尚不完全明白。不过第三个字节表示是不是有粗体这一点还是能确定的。
+            if (Form4Answer.UseBoldFont)
             {
-                font.Attributes = new byte[] { 14, 0, 255, 0, 0 };
+                _font.Attributes = new byte[] { 14, 0, 255, 0, 0 };
             }
             else
             {
-                font.Attributes = new byte[] { 14, 0, 0, 0, 0 };
+                _font.Attributes = new byte[] { 14, 0, 0, 0, 0 };
             }
 
-            font.Typefaces.Clear();
-            int Font_Size_Mod = form4answer.fontSizeMod;
-            double Margin_Mod = form4answer.fontMarginMod;
+            _font.Typefaces.Clear();
 
             //对每一种type
-            foreach (var typeinfo in typeinfos)
+            foreach (var typeinfo in _typeinfos)
             {
-                SharpFont.Face aFace;
-                if (typeinfo.bold)
+                //如果不打算生成粗体就跳过粗体
+                if (typeinfo.Bold && (!Form4Answer.UseBoldFont))
                 {
-                    if (form4answer.useBoldFont)
-                    {
-                        aFace = aFaceB;
-                    }
-                    else
-                    {
-                        continue;
-                    }
+                    continue;
                 }
-                else
+
+                Face aFaceNonAscii = typeinfo.Bold ? aFaceB : aFaceN;
+                Face aFaceAscii = null;
+
+                if (Form4Answer.UseSpecialFont4Ascii)
                 {
-                    aFace = aFaceN;
+                    aFaceAscii = typeinfo.Bold ? aFaceAB : aFaceAN;
+                }
+
+                //设置渲染字体大小
+                aFaceNonAscii.SetCharSize(typeinfo.Pt, 0, 72, 72);
+                if (Form4Answer.UseSpecialFont4Ascii)
+                {
+                    aFaceAscii.SetCharSize(typeinfo.Pt, 0, 72, 72);
                 }
 
                 //建立typeface
-                font.Typefaces.Add(new Typeface
+                string style;
+                if (aFaceNonAscii.StyleFlags.HasFlag(StyleFlags.Bold))
+                {
+                    style = "Bold";
+                }
+                else if (aFaceNonAscii.StyleFlags.HasFlag(StyleFlags.Italic))
+                {
+                    style = "Italic";
+                }
+                else
+                {
+                    style = "Normal";
+                }
+
+                _font.Typefaces.Add(new Typeface
                 {
                     Name = typeinfo.Name,
-                    Attributes = typeinfo.Attr
+                    Attributes = $"{aFaceNonAscii.FamilyName} {aFaceNonAscii.StyleName}, {typeinfo.Pt} pt, {style}, Default, Smooth"
                 });
-                var type = font.Typefaces.Last();
+                var type = _font.Typefaces.Last();
+                
 
                 //决定图片大小
-                int IMG_SIZE = 128;
-                if (typeinfo.height * typeinfo.height * font.CharsetCount > 128 * 128 * 5)
+                int imgSize = 128;
+                if (typeinfo.Pt * typeinfo.Pt * _font.CharsetCount > 128 * 128 * 5)
                 {
-                    IMG_SIZE = 256;
+                    imgSize = 256;
                 }
-                if (typeinfo.height * typeinfo.height * font.CharsetCount > 256 * 256 * 5)
+                if (typeinfo.Pt * typeinfo.Pt * _font.CharsetCount > 256 * 256 * 5)
                 {
-                    IMG_SIZE = 512;
+                    imgSize = 512;
                 }
-                if (typeinfo.height * typeinfo.height * font.CharsetCount > 512 * 512 * 5)
+                if (typeinfo.Pt * typeinfo.Pt * _font.CharsetCount > 512 * 512 * 5)
                 {
-                    IMG_SIZE = 1024;
+                    imgSize = 1024;
                 }
-                if (typeinfo.height * typeinfo.height * font.CharsetCount > 1024 * 1024 * 5)
+                if (typeinfo.Pt * typeinfo.Pt * _font.CharsetCount > 1024 * 1024 * 5)
                 {
-                    IMG_SIZE = 2048;
+                    imgSize = 2048;
                 }
-                if (typeinfo.height * typeinfo.height * font.CharsetCount > 2048 * 2048 * 5)
+                if (typeinfo.Pt * typeinfo.Pt * _font.CharsetCount > 2048 * 2048 * 5)
                 {
-                    IMG_SIZE = 4096;
+                    imgSize = 4096;
                 }
 
                 int topMargin = 0;
                 int leftMargin = 0;
 
-                var imgdata = new byte[IMG_SIZE * IMG_SIZE];
-                Array.Clear(imgdata, 0, IMG_SIZE * IMG_SIZE);
+                var imgdata = new byte[imgSize * imgSize];
+                Array.Clear(imgdata, 0, imgSize * imgSize);
                 int imgnum = 0;
 
-                for (int charaIndex = 0; charaIndex < font.CharsetCount; charaIndex++)
-                {
-                    var chara = font.Charset[charaIndex];
+                //记录一行里最高的字符
+                int maxHeightInLine = 0;
 
-                    //设置渲染字体大小
-                    if (chara >= 'a' && chara <= 'z')
+                //渲染每个字
+                for (int charaIndex = 0; charaIndex < _font.CharsetCount; charaIndex++)
+                {
+                    Face aFace;
+                    float fontBaselineMod;
+                    var chara = _font.Charset[charaIndex];
+                    //检查该字是不是需要使用ASCII字符的特殊设置
+                    bool ascii = (chara < 128) && Form4Answer.UseSpecialFont4Ascii;
+                    if (ascii)
                     {
-                        //英文小写字母最好格外再小一点
-                        aFace.SetPixelSizes(0, (uint)(typeinfo.height + Font_Size_Mod - 1));
+                        aFace = aFaceAscii;
+                        fontBaselineMod = Form4Answer.AsciiFontBaselineMod;
                     }
                     else
                     {
-                        aFace.SetPixelSizes(0, (uint)(typeinfo.height + Font_Size_Mod));
+                        aFace = aFaceNonAscii;
+                        fontBaselineMod = Form4Answer.FontBaselineMod;
                     }
-                    
+
                     type.Glyphs.Add(new Glyph
                     {
                         Character = chara
@@ -267,79 +310,92 @@ WidthInPoints: {glyph.WidthInPoints}";
                     var gly = type.Glyphs.Last();
 
                     //渲染
-                    aFace.LoadChar(chara, SharpFont.LoadFlags.Default, SharpFont.LoadTarget.Normal);
-                    aFace.Glyph.RenderGlyph(SharpFont.RenderMode.Normal);
-                    using (SharpFont.FTBitmap aBmp = aFace.Glyph.Bitmap)
+                    aFace.LoadChar(chara, LoadFlags.Default, LoadTarget.Normal);
+                    aFace.Glyph.RenderGlyph(RenderMode.Normal);
+                    using (FTBitmap aBmp = aFace.Glyph.Bitmap)
                     {
                         //设置gly相应属性
-                        gly.Height = typeinfo.height;
-                        gly.Width = (aFace.Glyph.LinearHorizontalAdvance.Value >> 16) + 1;
+                        gly.Height = aBmp.Rows;
+                        gly.Width = aBmp.Width;
                         if (gly.Width == 0)
                         {
                             gly.Width = 1;
                         }
-                        gly.FloatHeight = typeinfo.height;
-                        gly.FloatWidth = aFace.Glyph.LinearHorizontalAdvance.Value / 65536f;
-                        gly.HeightInPoints = typeinfo.height;
-                        gly.WidthInPoints = aFace.Glyph.LinearHorizontalAdvance.Value / 65536f;
+                        if (gly.Height == 0)
+                        {
+                            gly.Height = 1;
+                        }
+                        gly.Baseline = typeinfo.Pt * fontBaselineMod;
+                        gly.BitmapTop = gly.Baseline - aFace.Glyph.BitmapTop;                        
+                        gly.BitmapBottom = gly.BitmapTop + gly.Height;
 
+                        gly.BitmapLeft = aFace.Glyph.BitmapLeft;
+                        gly.BitmapRight = gly.BitmapLeft + gly.Width;
+                        gly.AdvanceX = aFace.Glyph.Advance.X.ToSingle();
+
+                        //不知道是干啥的变量，但是似乎永远为0
+                        gly.Zero = 0;
+
+                        maxHeightInLine = Math.Max(maxHeightInLine, gly.Height);
                         //换行
-                        if (leftMargin + gly.Width + 1 > IMG_SIZE)
+                        if (leftMargin + gly.Width + 1 > imgSize)
                         {
                             leftMargin = 0;
-                            topMargin += typeinfo.height + 1;
+                            topMargin += maxHeightInLine + 1;
+                            maxHeightInLine = gly.Height;
                         }
                         //换页
-                        if (topMargin + typeinfo.height + 2 > IMG_SIZE)
+                        if (topMargin + maxHeightInLine + 1 > imgSize)
                         {
                             topMargin = 0;
                             leftMargin = 0;
+                            maxHeightInLine = gly.Height;
 
                             type.Images.Add(new Homeworld2.RCF.Image
                             {
                                 Name = "",
                                 Version = 1
                             });
-                            type.Images.Last().ModifyBitmapData(IMG_SIZE, IMG_SIZE, imgdata);
+                            type.Images.Last().ModifyBitmapData(imgSize, imgSize, imgdata);
 
                             //决定新的图片的大小
                             if (
-                                IMG_SIZE == 4096 &&
-                                typeinfo.height * typeinfo.height * (font.CharsetCount - charaIndex) <= 2048 * 2048 * 3
+                                imgSize == 4096 &&
+                                typeinfo.Pt * typeinfo.Pt * (_font.CharsetCount - charaIndex) <= 2048 * 2048 * 3
                             )
                             {
-                                IMG_SIZE = 1024;
+                                imgSize = 1024;
                             }
                             if (
-                                IMG_SIZE == 2048 &&
-                                typeinfo.height * typeinfo.height * (font.CharsetCount - charaIndex) <= 1024 * 1024 * 3
+                                imgSize == 2048 &&
+                                typeinfo.Pt * typeinfo.Pt * (_font.CharsetCount - charaIndex) <= 1024 * 1024 * 3
                             )
                             {
-                                IMG_SIZE = 1024;
+                                imgSize = 1024;
                             }
                             if (
-                                IMG_SIZE == 1024 &&
-                                typeinfo.height * typeinfo.height * (font.CharsetCount - charaIndex) <= 512 * 512 * 3
+                                imgSize == 1024 &&
+                                typeinfo.Pt * typeinfo.Pt * (_font.CharsetCount - charaIndex) <= 512 * 512 * 3
                             )
                             {
-                                IMG_SIZE = 512;
+                                imgSize = 512;
                             }
                             if (
-                                IMG_SIZE == 512 &&
-                                typeinfo.height * typeinfo.height * (font.CharsetCount - charaIndex) <= 256 * 256 * 3
+                                imgSize == 512 &&
+                                typeinfo.Pt * typeinfo.Pt * (_font.CharsetCount - charaIndex) <= 256 * 256 * 3
                             )
                             {
-                                IMG_SIZE = 256;
+                                imgSize = 256;
                             }
                             if (
-                                IMG_SIZE == 256 &&
-                                typeinfo.height * typeinfo.height * (font.CharsetCount - charaIndex) <= 128 * 128 * 3
+                                imgSize == 256 &&
+                                typeinfo.Pt * typeinfo.Pt * (_font.CharsetCount - charaIndex) <= 128 * 128 * 3
                             )
                             {
-                                IMG_SIZE = 128;
+                                imgSize = 128;
                             }
-                            imgdata = new byte[IMG_SIZE * IMG_SIZE];
-                            Array.Clear(imgdata, 0, IMG_SIZE * IMG_SIZE);
+                            imgdata = new byte[imgSize * imgSize];
+                            Array.Clear(imgdata, 0, imgSize * imgSize);
                             imgnum++;
                         }
                         //设置剩余的gly属性
@@ -347,45 +403,17 @@ WidthInPoints: {glyph.WidthInPoints}";
                         gly.LeftMargin = leftMargin;
                         gly.TopMargin = topMargin;
 
-                        //计算下笔位置
-                        int pen_x = leftMargin + aFace.Glyph.BitmapLeft;
-                        int pen_y;
-                        if (chara >= 'a' && chara <= 'z')
-                        {
-                            //英文小写字母的位置特殊处理，尽量使其显得不要那么奇怪。。。
-                            pen_y = Math.Max(topMargin,
-                                topMargin + (aFace.Glyph.LinearVerticalAdvance.Value >> 16) - aFace.Glyph.BitmapTop +
-                                (int) (Margin_Mod * typeinfo.height)
-                            );
-                        }
-                        else
-                        {
-                            pen_y = Math.Max(topMargin,
-                                topMargin + typeinfo.height - aFace.Glyph.BitmapTop +
-                                (int)(Margin_Mod * typeinfo.height)
-                            );
-                        }
-
-                        if (pen_y + aBmp.Rows - topMargin > typeinfo.height)
-                        {
-                            pen_y = Math.Max(topMargin,
-                                topMargin + typeinfo.height - aBmp.Rows
-                            );
-                        }
-
-                        int pen_height = Math.Min(aBmp.Rows, typeinfo.height - (pen_y - topMargin));
-
-                        for (int line = 0; line < pen_height; line++)
+                        for (int line = 0; line < aBmp.Rows; line++)
                         {
                             for (int i = 0; i < aBmp.Width; i++)
                             {
-                                imgdata[(pen_y + line) * IMG_SIZE + pen_x + i] =
+                                imgdata[(topMargin + line) * imgSize + leftMargin + i] =
                                     aBmp.BufferData[line * aBmp.Pitch + i];
                             }
                         }                        
                     }
                     //移动margin
-                    leftMargin += gly.Width + 2;                    
+                    leftMargin += gly.Width + 1;                    
                 }
                 //最后一页img还没有放入typeface内，得补上。              
                 type.Images.Add(new Homeworld2.RCF.Image
@@ -393,28 +421,26 @@ WidthInPoints: {glyph.WidthInPoints}";
                     Name = "",
                     Version = 1
                 });
-                type.Images.Last().ModifyBitmapData(IMG_SIZE, IMG_SIZE, imgdata);
+                type.Images.Last().ModifyBitmapData(imgSize, imgSize, imgdata);
             }
-
-
 
             //刷新界面
             listBox1.Items.Clear();
             listBox2.Items.Clear();
 
-            for (int i = 1; i <= font.Typefaces.Count; i++)
+            for (int i = 1; i <= _font.Typefaces.Count; i++)
             {
                 listBox1.Items.Add(i);
             }
 
             textBox1.Text =
-                $@"Name: {font.Name}
-CharsetCount: {font.CharsetCount}
-Version: {font.Version}";
+                $@"Name: {_font.Name}
+CharsetCount: {_font.CharsetCount}
+Version: {_font.Version}";
 
-            textBox4.Text = font.Charset;
+            textBox4.Text = _font.Charset;
 
-            MessageBox.Show(this, "done!");
+            MessageBox.Show(this, @"done!");
         }
 
         //保存RCF文件
@@ -431,161 +457,145 @@ Version: {font.Version}";
                     return;
                 using (Stream fontStream = dialog.OpenFile())
                 {
-                    font.Write(fontStream);
+                    _font.Write(fontStream);
                 }
             }          
-            MessageBox.Show(this, "done!");
+            MessageBox.Show(this, @"done!");
         }
 
 
         private class Typeinfo
         {
             public string Name;
-            public string Attr;
-            public int height;
-            public bool bold;
+            public int Pt;
+            public bool Bold;
         }
 
-        private readonly List<Typeinfo> typeinfos = new List<Typeinfo>
+        private readonly List<Typeinfo> _typeinfos = new List<Typeinfo>
         {
             new Typeinfo
             {
                 Name = "Normal_400",
-                Attr = "Blender Pro Thin, 6 pt, Normal, Default, Smooth",
-                height = 12,
-                bold = false
+                Pt = 6,
+                Bold = false
             },
             new Typeinfo
             {
                 Name = "Normal_640",
-                Attr = "Blender Pro Thin, 8 pt, Normal, Default, Smooth",
-                height = 14,
-                bold = false
+                Pt = 8,
+                Bold = false
             },
             new Typeinfo
             {
                 Name = "Normal_800",
-                Attr = "Blender Pro Medium, 11 pt, Normal, Default, Smooth",
-                height = 16,
-                bold = false
+                Pt = 11,
+                Bold = false
             },
             new Typeinfo
             {
                 Name = "Normal_1024",
-                Attr = "Blender Pro Medium, 16 pt, Normal, Default, Smooth",
-                height = 18,
-                bold = false
+                Pt = 16,
+                Bold = false
             },
             new Typeinfo
             {
                 Name = "Normal_1280",
-                Attr = "Blender Pro Medium, 20 pt, Normal, Default, Smooth",
-                height = 18,
-                bold = false
+                Pt = 20,
+                Bold = false
             },
             new Typeinfo
             {
                 Name = "Normal_1600",
-                Attr = "Blender Pro Book, 22 pt, Thin, Default, Smooth",
-                height = 20,
-                bold = false
+                Pt = 22,
+                Bold = false
             },
             new Typeinfo
             {
                 Name = "Normal_2048",
-                Attr = "Blender Pro Book, 32 pt, Thin, Default, Smooth",
-                height = 25,
-                bold = false
+                Pt = 32,
+                Bold = false
             },
             new Typeinfo
             {
                 Name = "Normal_3000",
-                Attr = "Blender Pro Book, 40 pt, Thin, Default, Smooth",
-                height = 28,
-                bold = false
+                Pt = 40,
+                Bold = false
             },
             new Typeinfo
             {
                 Name = "Normal_8000",
-                Attr = "Blender Pro Book, 75 pt, Thin, Default, Smooth",
-                height = 58,
-                bold = false
+                Pt = 75,
+                Bold = false
             },
             new Typeinfo
             {
                 Name = "Bold_400",
-                Attr = "Blender Pro Bold, 6 pt, Bold, Default, Smooth",
-                height = 12,
-                bold = true
+                Pt = 6,
+                Bold = true
             },
             new Typeinfo
             {
                 Name = "Bold_640",
-                Attr = "Blender Pro Bold, 8 pt, Bold, Default, Smooth",
-                height = 14,
-                bold = true
+                Pt = 8,
+                Bold = true
             },
             new Typeinfo
             {
                 Name = "Bold_800",
-                Attr = "Blender Pro Bold, 11 pt, Bold, Default, Smooth",
-                height = 16,
-                bold = true
+                Pt = 11,
+                Bold = true
             },
             new Typeinfo
             {
                 Name = "Bold_1024",
-                Attr = "Blender Pro Medium, 16 pt, Normal, Default, Smooth",
-                height = 18,
-                bold = true
+                Pt = 16,
+                Bold = true
             },
             new Typeinfo
             {
-                Name = "Normal_1280",
-                Attr = "Blender Pro Bold, 16 pt, Bold, Default, Smooth",
-                height = 18,
-                bold = true
+                Name = "Bold_1280",
+                Pt = 20,
+                Bold = true
             },
             new Typeinfo
             {
                 Name = "Bold_1600",
-                Attr = "Blender Pro Book, 22 pt, Thin, Default, Smooth",
-                height = 20,
-                bold = true
+                Pt = 22,
+                Bold = true
             },
             new Typeinfo
             {
                 Name = "Bold_2048",
-                Attr = "Blender Pro Bold, 32 pt, Bold, Default, Smooth",
-                height = 25,
-                bold = true
+                Pt = 32,
+                Bold = true
             },
             new Typeinfo
             {
                 Name = "Bold_3000",
-                Attr = "Blender Pro Bold, 40 pt, Bold, Default, Smooth",
-                height = 28,
-                bold = true
+                Pt = 40,
+                Bold = true
             },
             new Typeinfo
             {
                 Name = "Bold_8000",
-                Attr = "Blender Pro Bold, 75 pt, Bold, Default, Smooth",
-                height = 58,
-                bold = true
+                Pt = 75,
+                Bold = true
             }
         };
 
-        public class Form4Answer
+        public class Form4AnswerType
         {
-            public string normalFontPath;
-            public string boldFontPath;
-            public bool useBoldFont;
-            public string charSet;
-            public int fontSizeMod;
-            public double fontMarginMod;
+            public string NormalFontPath;
+            public string BoldFontPath;
+            public bool UseBoldFont;
+            public string CharSet;
+            public float FontBaselineMod;
+            public bool UseSpecialFont4Ascii;
+            public string AsciiNormalFontPath;
+            public string AsciiBoldFontPath;
+            public float AsciiFontBaselineMod;
         }
 
-        public Form4Answer form4answer = new Form4Answer();
+        public Form4AnswerType Form4Answer = new Form4AnswerType();
     }
 }
