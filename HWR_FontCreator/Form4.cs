@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -15,6 +17,7 @@ namespace HWR_FontCreator
     {
         public Form4()
         {
+            //Thread.CurrentThread.CurrentUICulture = new CultureInfo("en");
             InitializeComponent();
         }
 
@@ -100,6 +103,11 @@ namespace HWR_FontCreator
         private void button6_Click(object sender, EventArgs e)
         {
             openFontDialog(textBox6);
+        }
+
+        private void Form4_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

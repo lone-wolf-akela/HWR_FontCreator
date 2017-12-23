@@ -21,5 +21,18 @@ namespace HWR_FontCreator
             ret.Palette = palette;
             return ret;
         }
+
+        public static byte[] img2type(Bitmap bmp)
+        {
+            var ret = new byte[bmp.Height * bmp.Width];
+            for (int y = 0; y < bmp.Height; y++)
+            {
+                for (int x = 0; x < bmp.Width; x++)
+                {
+                    ret[y * bmp.Width + x] = (byte) (bmp.GetPixel(x, y).GetBrightness() * 255);
+                }
+            }
+            return ret;
+        }
     }
 }

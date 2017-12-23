@@ -4,10 +4,12 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Homeworld2.RCF;
@@ -22,8 +24,12 @@ namespace HWR_FontCreator
         private readonly RCF _font = new RCF();
         private Form2 _form2;
         private Form3 _form3;
+        private Form4 _form4;
+        private Form5 _form5;
+
         public Form1()
         {
+            //Thread.CurrentThread.CurrentUICulture = new CultureInfo("en");
             InitializeComponent();
         }
 
@@ -45,7 +51,12 @@ namespace HWR_FontCreator
                     _font.Read(fontStream);
                 }
             }
-            
+
+            RefreshFontInfo();
+        }
+
+        private void RefreshFontInfo()
+        {
 
             listBox1.Items.Clear();
             listBox2.Items.Clear();
@@ -55,10 +66,9 @@ namespace HWR_FontCreator
                 listBox1.Items.Add(i);
             }
 
-            textBox1.Text =
-                $@"Name: {_font.Name}
-CharsetCount: {_font.CharsetCount}
-Version: {_font.Version}";
+            textBox1.Text = _font.Name;
+            textBox7.Text = _font.CharsetCount.ToString();
+            textBox8.Text = _font.Version.ToString();
 
             textBox4.Text = _font.Charset;
         }
@@ -76,9 +86,8 @@ Version: {_font.Version}";
             {
                 listBox2.Items.Add(i);
             }
-            textBox2.Text =
-                $@"Name: {selectedType.Name}
-Attr: {selectedType.Attributes}";
+            textBox2.Text = selectedType.Name;
+            textBox9.Text = selectedType.Attributes;
         }
 
         //选择image
@@ -90,11 +99,12 @@ Attr: {selectedType.Attributes}";
             }
             Homeworld2.RCF.Image img = _font.Typefaces[listBox1.SelectedIndex].Images[listBox2.SelectedIndex];
             _form2.pictureBox1.Image = helper.type2img(img);
-            textBox3.Text =
-                $@"Name: {img.Name}
-Version: {img.Version}
-Width: {img.Width}
-Height: {img.Height}";
+
+
+            textBox3.Text = img.Name;
+            textBox10.Text = img.Version.ToString();
+            textBox11.Text = img.Width.ToString();
+            textBox12.Text = img.Height.ToString();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -103,6 +113,8 @@ Height: {img.Height}";
             _form2.Show();
             _form3 = new Form3();
             _form3.Show();
+
+            _form5 = new Form5();
         }
 
         //选择特定文字
@@ -137,28 +149,28 @@ Height: {img.Height}";
             );
 
             _form3.pictureBox1.Image = helper.type2img(img).Clone(rect, bmp.PixelFormat);
-
-            textBox6.Text =
-                $@"Height: {glyph.Height}
-Width: {glyph.Width}
-BitmapLeft: {glyph.BitmapLeft}
-BitmapRight: {glyph.BitmapRight}
-AdvanceX: {glyph.AdvanceX}
-BitmapTop: {glyph.BitmapTop}
-Baseline:{glyph.Baseline}
-BitmapBottom:{glyph.BitmapBottom}
-Zero:{glyph.Zero}";
+            textBox6.Text = glyph.Height.ToString();
+            textBox13.Text = glyph.Width.ToString();
+            textBox14.Text = glyph.BitmapLeft.ToString(CultureInfo.InvariantCulture);
+            textBox15.Text = glyph.BitmapRight.ToString(CultureInfo.InvariantCulture);
+            textBox16.Text = glyph.AdvanceX.ToString(CultureInfo.InvariantCulture);
+            textBox17.Text = glyph.BitmapTop.ToString(CultureInfo.InvariantCulture);
+            textBox18.Text = glyph.Baseline.ToString(CultureInfo.InvariantCulture);
+            textBox19.Text = glyph.BitmapBottom.ToString(CultureInfo.InvariantCulture);
+            textBox20.Text = glyph.TopMargin.ToString();
+            textBox21.Text = glyph.ImageIndex.ToString();
+            textBox22.Text = glyph.LeftMargin.ToString();        
         }
 
         //导入字体文件
         private void button2_Click(object sender, EventArgs e)
         {
-            Form4 form4 = new Form4();
-            if (form4.ShowDialog(this) != DialogResult.OK)
+            _form4 = new Form4();
+            if (_form4.ShowDialog(this) != DialogResult.OK)
             {
                 return;
             }
-            form4.Dispose();
+            _form4.Dispose();
 
             var aLibrary = new Library();
             var aFaceN = aLibrary.NewFace(Form4Answer.NormalFontPath, 0);
@@ -425,20 +437,7 @@ Zero:{glyph.Zero}";
             }
 
             //刷新界面
-            listBox1.Items.Clear();
-            listBox2.Items.Clear();
-
-            for (int i = 1; i <= _font.Typefaces.Count; i++)
-            {
-                listBox1.Items.Add(i);
-            }
-
-            textBox1.Text =
-                $@"Name: {_font.Name}
-CharsetCount: {_font.CharsetCount}
-Version: {_font.Version}";
-
-            textBox4.Text = _font.Charset;
+            RefreshFontInfo();
 
             MessageBox.Show(this, @"done!");
         }
@@ -597,5 +596,125 @@ Version: {_font.Version}";
         }
 
         public Form4AnswerType Form4Answer = new Form4AnswerType();
+
+        //修改字体信息
+        private void button4_Click(object sender, EventArgs e)
+        {
+            _font.Name = textBox1.Text;
+            _font.Version = int.Parse(textBox8.Text);
+        }
+
+        //修改typeface信息
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedIndex < 0)
+            {
+                return;
+            }
+            Typeface selectedType = _font.Typefaces[listBox1.SelectedIndex];
+            selectedType.Name = textBox2.Text;
+            selectedType.Attributes = textBox9.Text;
+        }
+
+        //修改img信息
+        private void button6_Click(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedIndex < 0 || listBox2.SelectedIndex < 0)
+            {
+                return;
+            }
+            Homeworld2.RCF.Image img = _font.Typefaces[listBox1.SelectedIndex].Images[listBox2.SelectedIndex];
+            img.Name = textBox3.Text;
+            img.Version = int.Parse(textBox10.Text);
+        }
+
+        //修改单个字符信息
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (
+                textBox5.Text == "" ||
+                listBox1.SelectedIndex < 0
+            )
+                return;
+
+            var glyphs = from aGlyph in _font.Typefaces[listBox1.SelectedIndex].Glyphs
+                where aGlyph.Character == textBox5.Text[0]
+                select aGlyph;
+
+            if (!glyphs.Any())
+            {
+                return;
+            }
+
+            Glyph glyph = glyphs.First();
+
+            glyph.Height = int.Parse(textBox6.Text);
+            glyph.Width = int.Parse(textBox13.Text);
+            glyph.BitmapLeft = float.Parse(textBox14.Text);
+            glyph.BitmapRight = float.Parse(textBox15.Text);
+            glyph.AdvanceX = float.Parse(textBox16.Text);
+            glyph.BitmapTop = float.Parse(textBox17.Text);
+            glyph.Baseline = float.Parse(textBox18.Text);
+            glyph.Baseline = float.Parse(textBox19.Text);
+            glyph.TopMargin = int.Parse(textBox20.Text);
+            glyph.ImageIndex = int.Parse(textBox21.Text);
+            glyph.LeftMargin = int.Parse(textBox22.Text);
+        }
+
+        //导出选定图像
+        private void button8_Click(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedIndex < 0 || listBox2.SelectedIndex < 0)
+            {
+                return;
+            }
+            Homeworld2.RCF.Image img = _font.Typefaces[listBox1.SelectedIndex].Images[listBox2.SelectedIndex];
+            Bitmap bmp = helper.type2img(img);
+            using (var dialog = new SaveFileDialog
+                {
+                    Filter = @"PNG image files (*.png)|*.png",
+                    AddExtension = true
+                }
+            )
+            {
+                if (dialog.ShowDialog() == DialogResult.Cancel)
+                    return;
+                using (Stream pngStream = dialog.OpenFile())
+                {
+                    bmp.Save(pngStream,ImageFormat.Png);
+                }
+            }
+        }
+
+        //替换选定图像
+        private void button9_Click(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedIndex < 0 || listBox2.SelectedIndex < 0)
+            {
+                return;
+            }
+            using (var dialog = new OpenFileDialog
+                {
+                    Filter = @"PNG image files (*.png)|*.png",
+                    CheckFileExists = true,
+                    Multiselect = false
+            }
+            )
+            {
+                if (dialog.ShowDialog() == DialogResult.Cancel)
+                    return;
+                using (Stream pngStream = dialog.OpenFile())
+                {
+                    var bmp = new Bitmap(pngStream);
+                    _font.Typefaces[listBox1.SelectedIndex].Images[listBox2.SelectedIndex]
+                        .ModifyBitmapData(bmp.Width, bmp.Height, helper.img2type(bmp));
+                }
+            }
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            _form5.Show();
+        }
     }
 }
