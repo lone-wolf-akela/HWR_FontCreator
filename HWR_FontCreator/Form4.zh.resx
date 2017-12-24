@@ -123,11 +123,21 @@
   <data name="button2.Text" xml:space="preserve">
     <value>取消</value>
   </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="checkBox1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>119, 19</value>
+  </data>
   <data name="checkBox1.Text" xml:space="preserve">
     <value>字体包含粗体</value>
   </data>
+  <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>121, 15</value>
+  </data>
   <data name="label1.Text" xml:space="preserve">
     <value>正常字体TTF文件</value>
+  </data>
+  <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>121, 15</value>
   </data>
   <data name="label2.Text" xml:space="preserve">
     <value>粗体字体TTF文件</value>
@@ -138,14 +148,23 @@
   <data name="button4.Text" xml:space="preserve">
     <value>浏览</value>
   </data>
+  <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>37, 15</value>
+  </data>
   <data name="label3.Text" xml:space="preserve">
     <value>字库</value>
+  </data>
+  <data name="label5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>97, 15</value>
   </data>
   <data name="label5.Text" xml:space="preserve">
     <value>字体基线修正</value>
   </data>
   <data name="button5.Text" xml:space="preserve">
     <value>从文件导入</value>
+  </data>
+  <data name="label4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>167, 15</value>
   </data>
   <data name="label4.Text" xml:space="preserve">
     <value>ASCII字符字体基线修正</value>
@@ -156,13 +175,34 @@
   <data name="button7.Text" xml:space="preserve">
     <value>浏览</value>
   </data>
+  <data name="label6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>191, 15</value>
+  </data>
   <data name="label6.Text" xml:space="preserve">
     <value>ASCII字符粗体字体TTF文件</value>
+  </data>
+  <data name="label7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>191, 15</value>
   </data>
   <data name="label7.Text" xml:space="preserve">
     <value>ASCII字符正常字体TTF文件</value>
   </data>
+  <data name="checkBox2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>219, 19</value>
+  </data>
   <data name="checkBox2.Text" xml:space="preserve">
     <value>为ASCII字符使用单独的字体</value>
+  </data>
+  <data name="checkBox3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>209, 19</value>
+  </data>
+  <data name="checkBox3.Text" xml:space="preserve">
+    <value>使用正常字体自动生成粗体</value>
+  </data>
+  <data name="label8.Size" type="System.Drawing.Size, System.Drawing">
+    <value>67, 15</value>
+  </data>
+  <data name="label8.Text" xml:space="preserve">
+    <value>增粗系数</value>
   </data>
 </root>

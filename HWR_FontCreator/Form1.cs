@@ -323,6 +323,14 @@ namespace HWR_FontCreator
 
                     //渲染
                     aFace.LoadChar(chara, LoadFlags.Default, LoadTarget.Normal);
+                    if (typeinfo.Bold && Form4Answer.autoBold)
+                    {
+                        aFace.Glyph.Outline.Embolden(Form4Answer.autoBoldStrength * typeinfo.Pt);
+                    }
+                    else
+                    {
+                        aFace.Glyph.Outline.Embolden(0);
+                    }
                     aFace.Glyph.RenderGlyph(RenderMode.Normal);
                     using (FTBitmap aBmp = aFace.Glyph.Bitmap)
                     {
@@ -417,11 +425,8 @@ namespace HWR_FontCreator
 
                         for (int line = 0; line < aBmp.Rows; line++)
                         {
-                            for (int i = 0; i < aBmp.Width; i++)
-                            {
-                                imgdata[(topMargin + line) * imgSize + leftMargin + i] =
-                                    aBmp.BufferData[line * aBmp.Pitch + i];
-                            }
+                            Buffer.BlockCopy(aBmp.BufferData, line * aBmp.Pitch, imgdata,
+                                (topMargin + line) * imgSize + leftMargin, aBmp.Width);
                         }                        
                     }
                     //移动margin
@@ -593,6 +598,8 @@ namespace HWR_FontCreator
             public string AsciiNormalFontPath;
             public string AsciiBoldFontPath;
             public float AsciiFontBaselineMod;
+            public bool autoBold;
+            public double autoBoldStrength;
         }
 
         public Form4AnswerType Form4Answer = new Form4AnswerType();
