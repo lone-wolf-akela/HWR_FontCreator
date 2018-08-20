@@ -90,7 +90,6 @@
             this.textBox22 = new System.Windows.Forms.TextBox();
             this.button8 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
-            this.button10 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // button1
@@ -102,15 +101,15 @@
             // 
             // listBox1
             // 
-            this.listBox1.FormattingEnabled = true;
             resources.ApplyResources(this.listBox1, "listBox1");
+            this.listBox1.FormattingEnabled = true;
             this.listBox1.Name = "listBox1";
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
             // listBox2
             // 
-            this.listBox2.FormattingEnabled = true;
             resources.ApplyResources(this.listBox2, "listBox2");
+            this.listBox2.FormattingEnabled = true;
             this.listBox2.Name = "listBox2";
             this.listBox2.SelectedIndexChanged += new System.EventHandler(this.listBox2_SelectedIndexChanged);
             // 
@@ -467,18 +466,10 @@
             this.button9.UseVisualStyleBackColor = true;
             this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
-            // button10
-            // 
-            resources.ApplyResources(this.button10, "button10");
-            this.button10.Name = "button10";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
-            // 
             // Form1
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.button10);
             this.Controls.Add(this.button9);
             this.Controls.Add(this.button8);
             this.Controls.Add(this.label28);
@@ -609,7 +600,6 @@
         private System.Windows.Forms.TextBox textBox22;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.Button button9;
-        private System.Windows.Forms.Button button10;
     }
 }
 

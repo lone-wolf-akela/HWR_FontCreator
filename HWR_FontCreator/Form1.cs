@@ -25,7 +25,6 @@ namespace HWR_FontCreator
         private Form2 _form2;
         private Form3 _form3;
         private Form4 _form4;
-        private Form5 _form5;
 
         public Form1()
         {
@@ -113,8 +112,6 @@ namespace HWR_FontCreator
             _form2.Show();
             _form3 = new Form3();
             _form3.Show();
-
-            _form5 = new Form5();
         }
 
         //选择特定文字
@@ -717,11 +714,6 @@ namespace HWR_FontCreator
                         .ModifyBitmapData(bmp.Width, bmp.Height, helper.img2type(bmp));
                 }
             }
-        }
-
-        private void button10_Click(object sender, EventArgs e)
-        {
-            _form5.Show();
         }
     }
 }

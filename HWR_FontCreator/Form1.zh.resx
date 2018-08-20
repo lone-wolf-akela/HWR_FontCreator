@@ -142,6 +142,12 @@
   <data name="button6.Text" xml:space="preserve">
     <value>应用修改</value>
   </data>
+  <data name="button7.Location" type="System.Drawing.Point, System.Drawing">
+    <value>894, 516</value>
+  </data>
+  <data name="button7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>153, 30</value>
+  </data>
   <data name="button7.Text" xml:space="preserve">
     <value>应用修改</value>
   </data>
@@ -150,9 +156,6 @@
   </data>
   <data name="button9.Text" xml:space="preserve">
     <value>替换选定图像</value>
-  </data>
-  <data name="button10.Text" xml:space="preserve">
-    <value>帮助</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>主窗口</value>
