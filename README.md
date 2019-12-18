@@ -16,7 +16,7 @@ A tool to create & edit .rcf format font for *Homeworld Remastered*.
   确定后保存rcf字体
 
 ## Copyright Notices 版权声明
-* Part of the code comes from [Fallen-Angel](https://github.com/Robmaister/SharpFont)'s [rcf-tool](https://github.com/Fallen-Angel/rcf-tool). <br/>
-  部分代码来自于 [Fallen-Angel](https://github.com/Robmaister/SharpFont) 的 [rcf-tool](https://github.com/Fallen-Angel/rcf-tool) 。
+* Part of the code comes from [Fallen-Angel](https://github.com/Fallen-Angel)'s [rcf-tool](https://github.com/Fallen-Angel/rcf-tool). <br/>
+  部分代码来自于 [Fallen-Angel](https://github.com/Fallen-Angel) 的 [rcf-tool](https://github.com/Fallen-Angel/rcf-tool) 。
 * Uses [SharpFont](https://github.com/Robmaister/SharpFont) library. <br/>
   使用了 [SharpFont](https://github.com/Robmaister/SharpFont) 库。
